@@ -276,7 +276,11 @@ private:
         combine(color, depthDisp, combined);
         //combined = color;
 
+#if (CV_VERSION_MAJOR >= 4)
+        cv::putText(combined, oss.str(), pos, font, sizeText, colorText, lineText, cv::LINE_AA);
+#else
         cv::putText(combined, oss.str(), pos, font, sizeText, colorText, lineText, CV_AA);
+#endif
         cv::imshow("Image Viewer", combined);
       }
 

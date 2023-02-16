@@ -33,6 +33,8 @@
 #endif
 
 #include <opencv2/opencv.hpp>
+#include <opencv2/imgcodecs/legacy/constants_c.h>
+
 
 #include <ros/ros.h>
 #include <nodelet/nodelet.h>
@@ -460,6 +462,16 @@ private:
 
   void initCompression(const int32_t jpegQuality, const int32_t pngLevel, const bool use_png)
   {
+#if (CV_VERSION_MAJOR >= 4)
+    compressionParams.resize(7, 0);
+    compressionParams[0] = cv::IMWRITE_JPEG_QUALITY;
+    compressionParams[1] = jpegQuality;
+    compressionParams[2] = cv::IMWRITE_PNG_COMPRESSION;
+    compressionParams[3] = pngLevel;
+    compressionParams[4] = cv::IMWRITE_PNG_STRATEGY;
+    compressionParams[5] = cv::IMWRITE_PNG_STRATEGY_RLE;
+    compressionParams[6] = 0;
+#else
     compressionParams.resize(7, 0);
     compressionParams[0] = CV_IMWRITE_JPEG_QUALITY;
     compressionParams[1] = jpegQuality;
@@ -468,6 +480,7 @@ private:
     compressionParams[4] = CV_IMWRITE_PNG_STRATEGY;
     compressionParams[5] = CV_IMWRITE_PNG_STRATEGY_RLE;
     compressionParams[6] = 0;
+#endif
 
     if(use_png)
     {
@@ -1100,11 +1113,19 @@ private:
       cv::flip(color, tmp, 1);
       if(colorFrame->format == libfreenect2::Frame::BGRX)
       {
+#if (CV_VERSION_MAJOR >= 4)
+        cv::cvtColor(tmp, images[COLOR_HD], cv::COLOR_BGRA2BGR);
+#else
         cv::cvtColor(tmp, images[COLOR_HD], CV_BGRA2BGR);
+#endif
       }
       else
       {
+#if (CV_VERSION_MAJOR >= 4)
+        cv::cvtColor(tmp, images[COLOR_HD], cv::COLOR_RGBA2BGR);
+#else
         cv::cvtColor(tmp, images[COLOR_HD], CV_RGBA2BGR);
+#endif
       }
     }
 
@@ -1180,11 +1201,19 @@ private:
       cv::flip(cv::Mat(sizeIr, CV_8UC4, registered.data), tmp, 1);
       if(color.format == libfreenect2::Frame::BGRX)
       {
+#if (CV_VERSION_MAJOR >= 4)
+        cv::cvtColor(tmp, images[COLOR_SD_RECT], cv::COLOR_BGRA2BGR);
+#else
         cv::cvtColor(tmp, images[COLOR_SD_RECT], CV_BGRA2BGR);
+#endif
       }
       else
       {
+#if (CV_VERSION_MAJOR >= 4)
+        cv::cvtColor(tmp, images[COLOR_SD_RECT], cv::COLOR_RGBA2BGR);
+#else
         cv::cvtColor(tmp, images[COLOR_SD_RECT], CV_RGBA2BGR);
+#endif
       }
     }
 
@@ -1247,19 +1276,35 @@ private:
     // MONO
     if(status[MONO_HD])
     {
+#if (CV_VERSION_MAJOR >= 4)
+      cv::cvtColor(images[COLOR_HD], images[MONO_HD], cv::COLOR_BGR2GRAY);
+#else
       cv::cvtColor(images[COLOR_HD], images[MONO_HD], CV_BGR2GRAY);
+#endif
     }
     if(status[MONO_HD_RECT])
     {
+#if (CV_VERSION_MAJOR >= 4)
+      cv::cvtColor(images[COLOR_HD_RECT], images[MONO_HD_RECT], cv::COLOR_BGR2GRAY);
+#else
       cv::cvtColor(images[COLOR_HD_RECT], images[MONO_HD_RECT], CV_BGR2GRAY);
+#endif
     }
     if(status[MONO_QHD])
     {
+#if (CV_VERSION_MAJOR >= 4)
+      cv::cvtColor(images[COLOR_QHD], images[MONO_QHD], cv::COLOR_BGR2GRAY);
+#else
       cv::cvtColor(images[COLOR_QHD], images[MONO_QHD], CV_BGR2GRAY);
+#endif
     }
     if(status[MONO_QHD_RECT])
     {
+#if (CV_VERSION_MAJOR >= 4)
+      cv::cvtColor(images[COLOR_QHD_RECT], images[MONO_QHD_RECT], cv::COLOR_BGR2GRAY);
+#else
       cv::cvtColor(images[COLOR_QHD_RECT], images[MONO_QHD_RECT], CV_BGR2GRAY);
+#endif
     }
   }
 
